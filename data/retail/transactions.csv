@@ -1,0 +1,14 @@
+date,amount,category,counterparty,description
+2026-01-03,120.50,office_supplies,Staples,Printer paper
+2026-01-08,340.00,travel,Airline Co,Flight to client meeting
+2026-01-12,90.25,utilities,PowerCo,Electric bill
+2026-01-20,150.00,marketing,Ad Agency,Campaign design
+2026-01-27,75.00,office_supplies,Office Depot,Ink cartridges
+2026-02-02,210.00,travel,Hotel Group,Client travel
+2026-02-10,55.40,utilities,WaterCo,Water service
+2026-02-17,400.00,marketing,Social Media Co,Spring campaign
+2026-02-24,88.90,office_supplies,Staples,Desk organizer
+2026-03-01,125.00,travel,Train Co,Regional trip
+2026-03-11,67.30,utilities,PowerCo,Electric bill
+2026-03-19,320.00,marketing,Creative Studio,Brand refresh
+2026-03-25,95.50,office_supplies,Office Depot,Notebook order

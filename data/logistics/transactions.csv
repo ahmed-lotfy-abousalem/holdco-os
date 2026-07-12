@@ -1,0 +1,10 @@
+date,amount,category,counterparty,description
+2026-01-05,540.00,transport,fuelco,Diesel fuel
+2026-01-15,220.00,warehousing,ColdHub,Storage fee
+2026-01-29,310.00,transport,RoadWays,Route maintenance
+2026-02-07,610.00,transport,NorthFuel,Diesel fuel
+2026-02-18,180.00,warehousing,ColdHub,Storage fee
+2026-02-28,260.00,transport,Atlas Freight,Vehicle repair
+2026-03-03,495.00,transport,BlueLine,Diesel fuel
+2026-03-14,205.00,warehousing,ColdHub,Storage fee
+2026-03-24,330.00,transport,RoadWays,Route maintenance
