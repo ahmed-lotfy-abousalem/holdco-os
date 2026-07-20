@@ -1,0 +1,11 @@
+date,amount,category,counterparty,description
+2026-01-05,5000.00,loan_payment,First National Bank,Monthly term loan installment
+2026-01-15,1200.00,audit_fee,Meridian Audit Partners,Quarterly audit fieldwork
+2026-01-22,3000.00,insurance,Guardian Insurance,Corporate liability premium
+2026-02-01,5000.00,loan_payment,First National Bank,Monthly term loan installment
+2026-02-09,750.00,bank_fees,First National Bank,Wire transfer and account fees
+2026-02-18,8000.00,investment,Horizon Capital,Short-term treasury allocation
+2026-02-26,3000.00,insurance,Guardian Insurance,Corporate liability premium
+2026-03-01,5000.00,loan_payment,First National Bank,Monthly term loan installment
+2026-03-10,1500.00,audit_fee,Meridian Audit Partners,Year-end audit planning
+2026-03-20,2000.00,dividend,Holding Co Shareholders,Quarterly shareholder distribution

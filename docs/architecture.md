@@ -56,7 +56,7 @@ The orchestrator and optionally the subsidiary services can use the local LLM fo
 4. Each subsidiary returns its local result set.
 5. The orchestrator synthesizes one coherent answer.
 
-## 4. Recommended repository structure
+## 4. Repository structure
 
 ```text
 holdco-os/
@@ -69,11 +69,23 @@ holdco-os/
     retail/
     logistics/
     finance/
-  services/
-    subsidiary_api/
-    orchestrator/
+  app/
+    shared/            # subsidiary-agnostic: schemas, data loading, REST/MCP app factories
+    subsidiaries/
+      retail/           # service.py (REST, for manual testing) + mcp_server.py (MCP, for the LLM)
+      logistics/
+      finance/
+    orchestrator/       # main.py (FastAPI app + agentic tool-calling loop) + mcp_client.py
   tests/
+    shared/
+    subsidiaries/
+    orchestrator/
 ```
+
+Each subsidiary runs two processes: a REST API (ports 8001-8003, kept for curl/Swagger manual testing)
+and an MCP server (ports 9001-9003, what the orchestrator's LLM actually calls). Both are thin
+compositions built from the shared factories in `app/shared/`, so adding a fourth subsidiary means
+adding a data folder plus two ~10-line entrypoint files, not duplicating logic.
 
 ## 5. Why this fits your brief
 

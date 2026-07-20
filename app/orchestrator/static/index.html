@@ -1,0 +1,563 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>HoldCo OS Chat</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%A2%3C/text%3E%3C/svg%3E" />
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg-a: #eef2ff;
+    --bg-b: #f5f3ff;
+    --bg-c: #fdf2f8;
+    --panel: rgba(255, 255, 255, 0.82);
+    --panel-solid: #ffffff;
+    --text: #1e1b2e;
+    --muted: #6b6480;
+    --border: rgba(30, 27, 46, 0.08);
+    --shadow: 0 4px 16px rgba(76, 29, 149, 0.08);
+    --shadow-lg: 0 10px 34px rgba(76, 29, 149, 0.14);
+
+    --grad-1: #4f46e5;
+    --grad-2: #7c3aed;
+    --grad-3: #db2777;
+    --hero-grad: linear-gradient(120deg, var(--grad-1) 0%, var(--grad-2) 55%, var(--grad-3) 100%);
+
+    --accent: #6d28d9;
+    --user-grad: linear-gradient(135deg, #4f46e5, #7c3aed);
+
+    --retail: #d97706;
+    --retail-bg: #fef3c7;
+    --retail-bg-strong: #fde68a;
+    --logistics: #0891b2;
+    --logistics-bg: #cffafe;
+    --logistics-bg-strong: #a5f3fc;
+    --finance: #7c3aed;
+    --finance-bg: #ede9fe;
+    --finance-bg-strong: #ddd6fe;
+
+    --warn-bg: #fee2e2;
+    --warn-text: #b91c1c;
+    --online: #16a34a;
+    --offline: #dc2626;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg-a: #1a1530;
+      --bg-b: #150f28;
+      --bg-c: #1e1230;
+      --panel: rgba(30, 25, 48, 0.75);
+      --panel-solid: #211a38;
+      --text: #ede9fe;
+      --muted: #a89fc4;
+      --border: rgba(237, 233, 254, 0.1);
+      --shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+      --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.5);
+
+      --grad-1: #6366f1;
+      --grad-2: #a855f7;
+      --grad-3: #ec4899;
+
+      --accent: #a78bfa;
+      --user-grad: linear-gradient(135deg, #6366f1, #a855f7);
+
+      --retail: #fbbf24;
+      --retail-bg: #3f2d0f;
+      --retail-bg-strong: #52380f;
+      --logistics: #22d3ee;
+      --logistics-bg: #0e3a42;
+      --logistics-bg-strong: #0f4a54;
+      --finance: #c4b5fd;
+      --finance-bg: #2e2150;
+      --finance-bg-strong: #3a2a66;
+
+      --warn-bg: #3f1d1d;
+      --warn-text: #fca5a5;
+      --online: #4ade80;
+      --offline: #f87171;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    display: flex; flex-direction: column; align-items: center;
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background:
+      radial-gradient(60% 50% at 15% 0%, var(--bg-c) 0%, transparent 60%),
+      radial-gradient(50% 45% at 100% 10%, var(--bg-b) 0%, transparent 60%),
+      var(--bg-a);
+    background-attachment: fixed;
+  }
+  .app { width: 100%; max-width: 780px; height: 100%; display: flex; flex-direction: column; }
+
+  header {
+    position: relative;
+    padding: 22px 22px 26px;
+    background: var(--hero-grad);
+    color: #fff;
+    overflow: hidden;
+    display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+  }
+  header::before {
+    content: "";
+    position: absolute; inset: 0;
+    background-image:
+      radial-gradient(circle at 85% -10%, rgba(255,255,255,0.25) 0%, transparent 45%),
+      radial-gradient(circle at 10% 120%, rgba(255,255,255,0.15) 0%, transparent 50%);
+    pointer-events: none;
+  }
+  .brand { display: flex; align-items: center; gap: 12px; position: relative; z-index: 1; }
+  .brand-mark {
+    width: 42px; height: 42px; border-radius: 12px;
+    background: rgba(255, 255, 255, 0.16);
+    backdrop-filter: blur(6px);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.25);
+  }
+  header h1 { margin: 0; font-size: 1.15rem; font-weight: 700; letter-spacing: -0.01em; }
+  header .tagline { margin: 2px 0 0; font-size: 0.8rem; color: rgba(255,255,255,0.82); }
+  .status-line { display: flex; align-items: center; gap: 6px; margin-top: 8px; }
+  .status-dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,0.6); }
+  .status-dot.online { background: #4ade80; box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.25); }
+  .status-dot.offline { background: #f87171; box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.25); }
+  .status-text { font-size: 0.75rem; color: rgba(255,255,255,0.85); }
+
+  #clear-btn {
+    position: relative; z-index: 1;
+    background: rgba(255, 255, 255, 0.14);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(255,255,255,0.25);
+    color: #fff;
+    font-size: 0.78rem; font-weight: 600;
+    padding: 7px 13px; border-radius: 9px; cursor: pointer;
+  }
+  #clear-btn:hover { background: rgba(255, 255, 255, 0.24); }
+
+  #log {
+    flex: 1; overflow-y: auto;
+    padding: 22px; display: flex; flex-direction: column; gap: 16px;
+  }
+
+  .empty { margin: auto; text-align: center; max-width: 480px; display: flex; flex-direction: column; gap: 16px; align-items: center; }
+  .empty svg { width: 108px; height: auto; }
+  .empty h2 { margin: 0; font-size: 1.05rem; font-weight: 700; }
+  .empty p { margin: 0; color: var(--muted); font-size: 0.88rem; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+  .chip {
+    border: 1px solid var(--border);
+    background: var(--panel-solid);
+    color: var(--text);
+    font-size: 0.82rem; font-weight: 500;
+    padding: 8px 14px; border-radius: 999px; cursor: pointer;
+    box-shadow: var(--shadow);
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+  }
+  .chip:hover { transform: translateY(-1px); box-shadow: var(--shadow-lg); color: var(--accent); }
+
+  .row { display: flex; gap: 10px; align-items: flex-start; animation: rise 0.25s ease; }
+  @keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  .row.user { justify-content: flex-end; }
+  .row.assistant, .row.error { justify-content: flex-start; }
+
+  .avatar {
+    width: 32px; height: 32px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; box-shadow: var(--shadow);
+  }
+  .row.user .avatar { background: var(--user-grad); order: 2; }
+  .row.assistant .avatar, .row.error .avatar { background: var(--panel-solid); border: 1px solid var(--border); }
+  .avatar svg { width: 17px; height: 17px; }
+
+  .bubble-wrap { max-width: 78%; display: flex; flex-direction: column; }
+  .row.user .bubble-wrap { order: 1; align-items: flex-end; }
+
+  .bubble {
+    padding: 11px 15px;
+    border-radius: 16px;
+    line-height: 1.55;
+    font-size: 0.93rem;
+    box-shadow: var(--shadow);
+  }
+  .row.user .bubble {
+    background: var(--user-grad); color: #fff;
+    border-bottom-right-radius: 4px; white-space: pre-wrap;
+  }
+  .row.assistant .bubble {
+    background: var(--panel-solid); color: var(--text);
+    border: 1px solid var(--border);
+    border-bottom-left-radius: 4px;
+  }
+  .row.error .bubble {
+    background: var(--warn-bg); color: var(--warn-text);
+    border-bottom-left-radius: 4px; white-space: pre-wrap;
+  }
+  .bubble p { margin: 0 0 8px; }
+  .bubble p:last-child { margin-bottom: 0; }
+  .bubble ul, .bubble ol { margin: 4px 0 8px; padding-left: 20px; }
+  .bubble li { margin: 2px 0; }
+  .bubble h4 { margin: 4px 0 6px; font-size: 0.97rem; color: var(--accent); }
+  .bubble code {
+    background: var(--finance-bg); color: var(--finance);
+    padding: 1px 6px; border-radius: 5px;
+    font-size: 0.85em; font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  }
+  .bubble strong { font-weight: 700; }
+
+  .meta { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px; }
+  .badge {
+    font-size: 0.71rem; font-weight: 650; padding: 4px 10px; border-radius: 999px;
+    display: inline-flex; align-items: center; gap: 5px;
+  }
+  .badge.retail { background: var(--retail-bg); color: var(--retail); }
+  .badge.logistics { background: var(--logistics-bg); color: var(--logistics); }
+  .badge.finance { background: var(--finance-bg); color: var(--finance); }
+  .badge.warn { background: var(--warn-bg); color: var(--warn-text); }
+  .badge-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+  .typing { display: inline-flex; gap: 4px; align-items: center; padding: 5px 3px; }
+  .typing span { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: bounce 1.2s infinite ease-in-out; }
+  .typing span:nth-child(2) { animation-delay: 0.15s; }
+  .typing span:nth-child(3) { animation-delay: 0.3s; }
+  @keyframes bounce { 0%, 60%, 100% { transform: translateY(0); opacity: 0.4; } 30% { transform: translateY(-4px); opacity: 1; } }
+
+  form {
+    display: flex; align-items: flex-end; gap: 10px;
+    padding: 14px 20px 22px;
+    background: transparent;
+  }
+  #question {
+    flex: 1; resize: none; max-height: 140px;
+    padding: 12px 15px; border-radius: 14px;
+    border: 1px solid var(--border);
+    background: var(--panel-solid); color: var(--text);
+    font-size: 0.93rem; font-family: inherit;
+    outline: none; line-height: 1.4;
+    box-shadow: var(--shadow);
+  }
+  #question:focus { border-color: var(--accent); box-shadow: var(--shadow-lg); }
+  button[type="submit"] {
+    padding: 12px 20px; border-radius: 14px; border: none;
+    background: var(--user-grad); color: #fff;
+    font-size: 0.93rem; font-weight: 650; cursor: pointer;
+    box-shadow: var(--shadow);
+  }
+  button[type="submit"]:disabled { opacity: 0.5; cursor: not-allowed; }
+</style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="brand">
+        <div class="brand-mark">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none">
+            <rect x="3" y="10" width="6" height="11" rx="1" fill="#fbbf24"/>
+            <rect x="9.5" y="6" width="6" height="15" rx="1" fill="#f472b6"/>
+            <rect x="16" y="3" width="6" height="18" rx="1" fill="#a5f3fc"/>
+          </svg>
+        </div>
+        <div>
+          <h1>HoldCo OS</h1>
+          <p class="tagline">Retail · Logistics · Finance, one federated assistant</p>
+          <div class="status-line">
+            <span class="status-dot" id="status-dot"></span>
+            <span class="status-text" id="status-text">Checking…</span>
+          </div>
+        </div>
+      </div>
+      <button id="clear-btn" type="button">Clear chat</button>
+    </header>
+
+    <div id="log"></div>
+
+    <form id="chat-form">
+      <textarea id="question" rows="1" placeholder="Ask about retail, logistics, or finance…"></textarea>
+      <button id="send-btn" type="submit">Send</button>
+    </form>
+  </div>
+
+<script>
+  const log = document.getElementById("log");
+  const form = document.getElementById("chat-form");
+  const input = document.getElementById("question");
+  const sendBtn = document.getElementById("send-btn");
+  const clearBtn = document.getElementById("clear-btn");
+  const statusDot = document.getElementById("status-dot");
+  const statusText = document.getElementById("status-text");
+
+  const HISTORY_KEY = "holdco-chat-history";
+  const EXAMPLE_PROMPTS = [
+    "What is our total spend across the company?",
+    "Any recent audit reports or vendor contracts?",
+    "How many retail transactions do we have?",
+  ];
+
+  const BOT_ICON = `<svg viewBox="0 0 24 24" width="17" height="17" fill="none">
+    <rect x="4" y="3" width="6" height="10" rx="1" fill="#d97706"/>
+    <rect x="14" y="7" width="6" height="6" rx="1" fill="#0891b2"/>
+    <rect x="9" y="12" width="6" height="8" rx="1" fill="#7c3aed"/>
+  </svg>`;
+  const USER_ICON = `<svg viewBox="0 0 24 24" width="16" height="16" fill="none">
+    <circle cx="12" cy="8" r="3.4" fill="#fff"/>
+    <path d="M5 20c1-4 4.5-6 7-6s6 2 7 6" stroke="#fff" stroke-width="2" stroke-linecap="round" fill="none"/>
+  </svg>`;
+  const WARN_ICON = `<svg viewBox="0 0 24 24" width="16" height="16" fill="none">
+    <path d="M12 3 2 20h20L12 3Z" fill="#fca5a5"/>
+    <rect x="11" y="9" width="2" height="6" fill="#7f1d1d"/>
+    <rect x="11" y="16" width="2" height="2" fill="#7f1d1d"/>
+  </svg>`;
+
+  let messages = loadHistory();
+
+  function loadHistory() {
+    try {
+      return JSON.parse(localStorage.getItem(HISTORY_KEY)) || [];
+    } catch {
+      return [];
+    }
+  }
+
+  function saveHistory() {
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(messages));
+  }
+
+  function scrollToBottom() {
+    log.scrollTop = log.scrollHeight;
+  }
+
+  function escapeHtml(str) {
+    return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+
+  function inlineFormat(text) {
+    return text
+      .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+      .replace(/`(.+?)`/g, "<code>$1</code>")
+      .replace(/(^|[^*])\*(?!\*)(.+?)\*(?!\*)/g, "$1<em>$2</em>");
+  }
+
+  function renderMarkdown(raw) {
+    const lines = escapeHtml(raw).split("\n");
+    let html = "";
+    let listType = null;
+    const closeList = () => { if (listType) { html += `</${listType}>`; listType = null; } };
+
+    for (const line of lines) {
+      const bullet = line.match(/^\s*[-*]\s+(.*)/);
+      const numbered = line.match(/^\s*\d+\.\s+(.*)/);
+      const header = line.match(/^(#{1,4})\s+(.*)/);
+
+      if (bullet) {
+        if (listType !== "ul") { closeList(); html += "<ul>"; listType = "ul"; }
+        html += `<li>${inlineFormat(bullet[1])}</li>`;
+      } else if (numbered) {
+        if (listType !== "ol") { closeList(); html += "<ol>"; listType = "ol"; }
+        html += `<li>${inlineFormat(numbered[1])}</li>`;
+      } else if (header) {
+        closeList();
+        html += `<h4>${inlineFormat(header[2])}</h4>`;
+      } else if (line.trim() === "") {
+        closeList();
+      } else {
+        closeList();
+        html += `<p>${inlineFormat(line)}</p>`;
+      }
+    }
+    closeList();
+    return html || "<p></p>";
+  }
+
+  function renderEmptyState() {
+    const wrap = document.createElement("div");
+    wrap.className = "empty";
+    wrap.innerHTML = `
+      <svg viewBox="0 0 160 120" fill="none">
+        <ellipse cx="80" cy="108" rx="60" ry="8" fill="currentColor" opacity="0.06"/>
+        <rect x="18" y="46" width="34" height="58" rx="4" fill="var(--retail-bg-strong)"/>
+        <rect x="26" y="56" width="6" height="6" fill="var(--retail)"/>
+        <rect x="38" y="56" width="6" height="6" fill="var(--retail)"/>
+        <rect x="26" y="68" width="6" height="6" fill="var(--retail)"/>
+        <rect x="38" y="68" width="6" height="6" fill="var(--retail)"/>
+        <rect x="63" y="24" width="34" height="80" rx="4" fill="var(--finance-bg-strong)"/>
+        <rect x="71" y="34" width="6" height="6" fill="var(--finance)"/>
+        <rect x="83" y="34" width="6" height="6" fill="var(--finance)"/>
+        <rect x="71" y="46" width="6" height="6" fill="var(--finance)"/>
+        <rect x="83" y="46" width="6" height="6" fill="var(--finance)"/>
+        <rect x="71" y="58" width="6" height="6" fill="var(--finance)"/>
+        <rect x="83" y="58" width="6" height="6" fill="var(--finance)"/>
+        <rect x="108" y="38" width="34" height="66" rx="4" fill="var(--logistics-bg-strong)"/>
+        <rect x="116" y="48" width="6" height="6" fill="var(--logistics)"/>
+        <rect x="128" y="48" width="6" height="6" fill="var(--logistics)"/>
+        <rect x="116" y="60" width="6" height="6" fill="var(--logistics)"/>
+        <rect x="128" y="60" width="6" height="6" fill="var(--logistics)"/>
+      </svg>
+      <h2>Ask HoldCo OS anything</h2>
+      <p>Retail, logistics, and finance data — each subsidiary answers through its own agent.</p>
+      <div class="chips"></div>
+    `;
+    const chips = wrap.querySelector(".chips");
+    EXAMPLE_PROMPTS.forEach((prompt) => {
+      const chip = document.createElement("button");
+      chip.type = "button";
+      chip.className = "chip";
+      chip.textContent = prompt;
+      chip.addEventListener("click", () => sendQuestion(prompt));
+      chips.appendChild(chip);
+    });
+    log.appendChild(wrap);
+  }
+
+  function buildRow(role) {
+    const row = document.createElement("div");
+    row.className = "row " + role;
+    const avatar = document.createElement("div");
+    avatar.className = "avatar";
+    avatar.innerHTML = role === "user" ? USER_ICON : role === "error" ? WARN_ICON : BOT_ICON;
+    const wrap = document.createElement("div");
+    wrap.className = "bubble-wrap";
+    const bubble = document.createElement("div");
+    bubble.className = "bubble";
+    wrap.appendChild(bubble);
+    row.appendChild(avatar);
+    row.appendChild(wrap);
+    return { row, wrap, bubble };
+  }
+
+  function renderMessage(msg) {
+    const { row, wrap, bubble } = buildRow(msg.role);
+    if (msg.role === "assistant") {
+      bubble.innerHTML = renderMarkdown(msg.text);
+    } else {
+      bubble.textContent = msg.text;
+    }
+    if ((msg.subsidiaries && msg.subsidiaries.length) || (msg.unavailable && msg.unavailable.length)) {
+      const meta = document.createElement("div");
+      meta.className = "meta";
+      (msg.subsidiaries || []).forEach((name) => {
+        const badge = document.createElement("span");
+        badge.className = "badge " + name;
+        badge.innerHTML = `<span class="badge-dot"></span>${name}`;
+        meta.appendChild(badge);
+      });
+      (msg.unavailable || []).forEach((name) => {
+        const badge = document.createElement("span");
+        badge.className = "badge warn";
+        badge.textContent = name + " unavailable";
+        meta.appendChild(badge);
+      });
+      wrap.appendChild(meta);
+    }
+    log.appendChild(row);
+  }
+
+  function render() {
+    log.innerHTML = "";
+    if (messages.length === 0) {
+      renderEmptyState();
+    } else {
+      messages.forEach(renderMessage);
+    }
+    scrollToBottom();
+  }
+
+  function addMessage(msg) {
+    messages.push(msg);
+    saveHistory();
+    render();
+  }
+
+  function addTypingRow() {
+    const { row, bubble } = buildRow("assistant");
+    row.id = "typing-row";
+    bubble.classList.add("typing");
+    bubble.innerHTML = "<span></span><span></span><span></span>";
+    log.appendChild(row);
+    scrollToBottom();
+    return row;
+  }
+
+  async function sendQuestion(question) {
+    addMessage({ role: "user", text: question });
+    input.value = "";
+    autoResize();
+    input.disabled = true;
+    sendBtn.disabled = true;
+    const typingRow = addTypingRow();
+    scrollToBottom();
+
+    try {
+      const response = await fetch("/answer", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question }),
+      });
+      typingRow.remove();
+
+      if (!response.ok) {
+        const detail = await response.text();
+        addMessage({ role: "error", text: `Error ${response.status}: ${detail || "the orchestrator could not answer."}` });
+      } else {
+        const data = await response.json();
+        addMessage({
+          role: "assistant",
+          text: data.answer || "(no answer returned)",
+          subsidiaries: data.subsidiaries,
+          unavailable: data.unavailable,
+        });
+      }
+    } catch (err) {
+      typingRow.remove();
+      addMessage({ role: "error", text: "Network error: could not reach the orchestrator." });
+    } finally {
+      input.disabled = false;
+      sendBtn.disabled = false;
+      input.focus();
+    }
+  }
+
+  function autoResize() {
+    input.style.height = "auto";
+    input.style.height = Math.min(input.scrollHeight, 140) + "px";
+  }
+
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const question = input.value.trim();
+    if (!question) return;
+    sendQuestion(question);
+  });
+
+  input.addEventListener("input", autoResize);
+  input.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+      form.requestSubmit();
+    }
+  });
+
+  clearBtn.addEventListener("click", () => {
+    messages = [];
+    saveHistory();
+    render();
+  });
+
+  async function checkHealth() {
+    try {
+      const res = await fetch("/health");
+      if (!res.ok) throw new Error();
+      statusDot.className = "status-dot online";
+      statusText.textContent = "Online";
+    } catch {
+      statusDot.className = "status-dot offline";
+      statusText.textContent = "Offline";
+    }
+  }
+
+  render();
+  input.focus();
+  checkHealth();
+  setInterval(checkHealth, 30000);
+</script>
+</body>
+</html>
